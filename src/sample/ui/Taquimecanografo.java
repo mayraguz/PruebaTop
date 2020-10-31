@@ -3,6 +3,7 @@ package sample.ui;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToolBar;
@@ -15,8 +16,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
+import java.io.BufferedReader;
 import java.io.File;//libreria de entrada/salida (Es estandar y/o generico)
+import java.io.FileReader;
 import java.io.IOException;
+import java.util.StringTokenizer;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
 
 public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
 
@@ -25,7 +32,7 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
 
     //Areglos para etiquetar los botones del teclado
     private String arLblBtn1[] = {"ESC", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "Imp Pan", "Pausa", "Insert", "Supr"};
-    private String arLblBtn2[] = {" | °  ¬", "  1  ! ", "  2  ´´ ", " 3  # ", " 4  $ ", " 5  % ", " 6  & "," 7  / ", " 8  ( ", " 9  ) ", " 0  = ", " '  ? ", " ¿  ¡ ", "    <-----   "};
+    private String arLblBtn2[] = {" | °  ¬", "  1  ! ", "  2  ´´ ", " 3  # ", " 4  $ ", " 5  % ", " 6  & ", " 7  / ", " 8  ( ", " 9  ) ", " 0  = ", " '  ? ", " ¿  ¡ ", "    <-----   "};
     private String arLblBtn3[] = {" -->  <-- ", " Q @ ", "   W  ", "   E  ", "   R  ", "   T  ", "   Y  ", "   U  ", "   I  ", "   O  ", "  P   ", "  ´ ¨  ", "  + * ~  ", "  Intro  "};
     private String arLblBtn4[] = {"  Bloq  Mayús  ", "   A   ", "   S   ", "   D   ", "   F   ", "   G   ", "   H   ", "   J   ", "   K   ", "   L   ", "   Ñ   ", "  {  [  ^  ", "  }  ]  ` "};
     private String arLblBtn5[] = {"   Shift   ", "  <  >  ", "   Z   ", "   X   ", "   C   ", "   V   ", "   B   ", "   N   ", "   M   ", "  ,  ;  ", "  .  :  ", "   - _   ", "       Shift      "};
@@ -34,6 +41,9 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
     //Elementos para el Toolbar
     private ToolBar tlbMenu;
     private Button btnAbrir;
+
+    //Guardará el contenido del archivo
+    private String ubiTexto;
 
     //Elementos para la escritura
     private TextArea txtContenido, txtEscritura;
@@ -52,7 +62,7 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
     private VBox vBoxPrincipal;
     private Scene escena;
 
-    public Taquimecanografo(){
+    public Taquimecanografo() {
         CrearUI();
         this.setTitle("Tutos de taquimecanografía");
         this.setScene(escena);//Crea escena
@@ -76,37 +86,37 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
         vBoxTeclado = new VBox();
         vBoxTeclado.setSpacing(8);//Espaciado vertical
 
-        for(int i=0; i<arHBoxTeclas.length; i++){//Instacia el arreglo para cada linea
+        for (int i = 0; i < arHBoxTeclas.length; i++) {//Instacia el arreglo para cada linea
             arHBoxTeclas[i] = new HBox();
             arHBoxTeclas[i].setSpacing(10);//Espaciado Horizontal
         }
 
-        for(int i=0; i<arBtnTeclado1.length; i++) {
+        for (int i = 0; i < arBtnTeclado1.length; i++) {
             arBtnTeclado1[i] = new Button(arLblBtn1[i]);
             arBtnTeclado1[i].setStyle("-fx-background-color: #FFB6C1;");
             arHBoxTeclas[0].getChildren().add(arBtnTeclado1[i]);
         }
-        for(int i=0; i< arBtnTeclado2.length; i++) {
+        for (int i = 0; i < arBtnTeclado2.length; i++) {
             arBtnTeclado2[i] = new Button(arLblBtn2[i]);
             arBtnTeclado2[i].setStyle("-fx-background-color: #FFB6C1;");
             arHBoxTeclas[1].getChildren().add(arBtnTeclado2[i]);
         }
-        for(int i=0; i<arBtnTeclado3.length; i++) {
+        for (int i = 0; i < arBtnTeclado3.length; i++) {
             arBtnTeclado3[i] = new Button(arLblBtn3[i]);
             arBtnTeclado3[i].setStyle("-fx-background-color: #FFB6C1;");
             arHBoxTeclas[2].getChildren().add(arBtnTeclado3[i]);
         }
-        for(int i=0; i<arBtnTeclado4.length; i++) {
+        for (int i = 0; i < arBtnTeclado4.length; i++) {
             arBtnTeclado4[i] = new Button(arLblBtn4[i]);
             arBtnTeclado4[i].setStyle("-fx-background-color: #FFB6C1;");
             arHBoxTeclas[3].getChildren().add(arBtnTeclado4[i]);
         }
-        for(int i=0; i<arBtnTeclado5.length; i++) {
+        for (int i = 0; i < arBtnTeclado5.length; i++) {
             arBtnTeclado5[i] = new Button(arLblBtn5[i]);
             arBtnTeclado5[i].setStyle("-fx-background-color: #FFB6C1;");
             arHBoxTeclas[4].getChildren().add(arBtnTeclado5[i]);
         }
-        for(int i=0; i<arBtnTeclado6.length; i++) {
+        for (int i = 0; i < arBtnTeclado6.length; i++) {
             arBtnTeclado6[i] = new Button(arLblBtn6[i]);
             arBtnTeclado6[i].setStyle("-fx-background-color: #FFB6C1;");
             arHBoxTeclas[5].getChildren().add(arBtnTeclado6[i]);
@@ -122,7 +132,7 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
         txtEscritura.setPrefRowCount(6);
         txtEscritura.setOnKeyPressed(this);
         txtEscritura.setOnKeyReleased(this);
-        addEventHandler(KeyEvent.KEY_TYPED,this);
+        addEventHandler(KeyEvent.KEY_TYPED, this);
     }
 
     private void CrearToolbar() {
@@ -141,155 +151,188 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
     }
 
     private void eventoTaqui(int opc) {
-        switch (opc){
+        switch (opc) {
             case 1:
                 FileChooser fileChooser = new FileChooser();
                 fileChooser.setTitle("Abrir archivo....");
                 fileChooser.setInitialDirectory(new File("C:\\Users\\yareli\\Documents\\ITC\\QUINTO SEMESTRE\\TOPICOS\\PARCIAL 1\\MEMORAMA\\TAQUIMECANOGRÁFO"));
                 File file = fileChooser.showOpenDialog(this);//Recibe caracteristicas del archivo
                 //El fileChooser ayuda a abrir las carpetas para encontrar los documentos.
-            break;
+                ubiTexto = file.getAbsolutePath();
+                //System.out.println(leerTxt(ubiTexto));
+
+                if (file != null) {
+                    //Creación de los parametros para el manejo del texto
+                    FileReader fr = null;
+                    BufferedReader br = null;
+                    String texto = "";
+                    try {
+                        fr = new FileReader(file);
+                        br = new BufferedReader(fr);
+                        String st = br.readLine();
+
+                        while (st != null) {
+                            texto = texto + st + "\n";
+                            st = br.readLine();
+                        }
+                    } catch (Exception e) {
+                        txtContenido.appendText(e.toString());
+                    } finally {
+                        try {
+                            fr.close();
+                        } catch (Exception e2) {
+                            txtContenido.appendText(e2.toString());
+                        }
+                    }
+                    txtContenido.appendText(texto);
+                }
+                break;
         }
+
     }
+
+    public String leerTxt(String direccion) {
+
+        String cont = "";//Guardara el contenido del texto
+
+        try {
+            BufferedReader bf = new BufferedReader(new FileReader(direccion));
+            String txt = "";
+            String bfRead;
+
+            while ((bfRead = bf.readLine()) != null) {
+                //El ciclo funciona mientras hay texto en el archivo
+                txt = txt + bfRead;//Guarda el texto del archivo
+            }
+            cont = txt;
+
+        } catch (Exception e) {
+
+        }
+        return cont;
+    }
+
 
     @Override
     public void handle(KeyEvent event) {
-        //System.out.println(event.getCode().toString());
         //Cambiaos el color de las teclas al ser presionadas
-        switch (event.getCode().toString()){
+        switch (event.getCode().toString()) {
             case "ESCAPE":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[0].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[0].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "F1":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[1].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[1].setStyle("-fx-background-color: FFB6C1;");
                 }
-            break;
+                break;
             case "F2":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[2].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[2].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F3":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[3].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[3].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F4":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[4].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[4].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F5":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[5].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[5].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F6":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[6].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[6].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F7":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[7].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[7].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F8":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[8].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[8].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F9":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[9].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[9].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F10":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[10].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[10].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F11":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[11].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[11].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "F12":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[12].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[12].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "PRINTSCREEN":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[13].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[13].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "PAUSE":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[14].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[14].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "INSERT":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[15].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[15].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DELETE":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado1[16].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado1[16].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
@@ -302,90 +345,79 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
                 }
                 break;*/
             case "DIGIT1":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[1].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[1].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "DIGIT2":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[2].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[2].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT3":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[3].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[3].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT4":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[4].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[4].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT5":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[5].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[5].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT6":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[6].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[6].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT7":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[7].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[7].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT8":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[8].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[8].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT9":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[9].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[9].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "DIGIT0":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[10].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[10].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
             case "QUOTE":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[11].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[11].setStyle("-fx-background-color: #FFB6C1;");
                 }
                 break;
@@ -398,371 +430,361 @@ public class Taquimecanografo extends Stage implements EventHandler<KeyEvent> {
                 }
                 break;*/
             case "BACK_SPACE":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado2[13].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado2[13].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "TAB":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[0].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[0].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "Q":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[1].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[1].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "W":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[2].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[2].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "E":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[3].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[3].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "R":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[4].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[4].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "T":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[5].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[5].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "Y":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[6].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[6].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "U":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[7].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[7].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "I":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[8].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[8].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "O":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[9].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[9].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "P":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[10].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[10].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "DEAD_ACUTE":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[11].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[11].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "PLUS":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[12].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[12].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
             case "ENTER":
-                if(banColor == false){
+                if (banColor == false) {
                     arBtnTeclado3[13].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado3[13].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "CAPS" :
-                if(banColor == false){
+                break;
+            case "CAPS":
+                if (banColor == false) {
                     arBtnTeclado4[0].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[0].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "A" :
-                if(banColor == false){
+                break;
+            case "A":
+                if (banColor == false) {
                     arBtnTeclado4[1].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[1].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "S" :
-                if(banColor == false){
+                break;
+            case "S":
+                if (banColor == false) {
                     arBtnTeclado4[2].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[2].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "D" :
-                if(banColor == false){
+                break;
+            case "D":
+                if (banColor == false) {
                     arBtnTeclado4[3].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[3].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "F" :
-                if(banColor == false){
+                break;
+            case "F":
+                if (banColor == false) {
                     arBtnTeclado4[4].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[4].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "G" :
-                if(banColor == false){
+                break;
+            case "G":
+                if (banColor == false) {
                     arBtnTeclado4[5].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[5].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "H" :
-                if(banColor == false){
+                break;
+            case "H":
+                if (banColor == false) {
                     arBtnTeclado4[6].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[6].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "J" :
-                if(banColor == false){
+                break;
+            case "J":
+                if (banColor == false) {
                     arBtnTeclado4[7].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[7].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "K" :
-                if(banColor == false){
+                break;
+            case "K":
+                if (banColor == false) {
                     arBtnTeclado4[8].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[8].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "L" :
-                if(banColor == false){
+                break;
+            case "L":
+                if (banColor == false) {
                     arBtnTeclado4[9].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[9].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "Ñ" :
-                if(banColor == false){
+                break;
+            case "Ñ":
+                if (banColor == false) {
                     arBtnTeclado4[10].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[10].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "BRACELEFT" :
-                if(banColor == false){
+                break;
+            case "BRACELEFT":
+                if (banColor == false) {
                     arBtnTeclado4[11].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[11].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "BRACERIGHT" :
-                if(banColor == false){
+                break;
+            case "BRACERIGHT":
+                if (banColor == false) {
                     arBtnTeclado4[12].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado4[12].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "SHIFT" :
-                if(banColor == false){
+                break;
+            case "SHIFT":
+                if (banColor == false) {
                     arBtnTeclado5[0].setStyle("-fx-background-color: #85D4D6;");
                     arBtnTeclado5[12].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[0].setStyle("-fx-background-color: #FFB6C1;");
                     arBtnTeclado5[12].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "LESS" :
-                if(banColor == false){
+                break;
+            case "LESS":
+                if (banColor == false) {
                     arBtnTeclado5[1].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[1].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "Z" :
-                if(banColor == false){
+                break;
+            case "Z":
+                if (banColor == false) {
                     arBtnTeclado5[2].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[2].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "X" :
-                if(banColor == false){
+                break;
+            case "X":
+                if (banColor == false) {
                     arBtnTeclado5[3].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[3].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "C" :
-                if(banColor == false){
+                break;
+            case "C":
+                if (banColor == false) {
                     arBtnTeclado5[4].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[4].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "V" :
-                if(banColor == false){
+                break;
+            case "V":
+                if (banColor == false) {
                     arBtnTeclado5[5].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[5].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "B" :
-                if(banColor == false){
+                break;
+            case "B":
+                if (banColor == false) {
                     arBtnTeclado5[6].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[6].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "N" :
-                if(banColor == false){
+                break;
+            case "N":
+                if (banColor == false) {
                     arBtnTeclado5[7].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[7].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "M" :
-                if(banColor == false){
+                break;
+            case "M":
+                if (banColor == false) {
                     arBtnTeclado5[8].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[8].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "COMMA" :
-                if(banColor == false){
+                break;
+            case "COMMA":
+                if (banColor == false) {
                     arBtnTeclado5[9].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[9].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "PERIOD" :
-                if(banColor == false){
+                break;
+            case "PERIOD":
+                if (banColor == false) {
                     arBtnTeclado5[10].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[10].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "MINUS" :
-                if(banColor == false){
+                break;
+            case "MINUS":
+                if (banColor == false) {
                     arBtnTeclado5[11].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado5[11].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "CONTROL" :
-                if(banColor == false){
+                break;
+            case "CONTROL":
+                if (banColor == false) {
                     arBtnTeclado6[0].setStyle("-fx-background-color: #85D4D6;");
                     arBtnTeclado6[7].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado6[0].setStyle("-fx-background-color: #FFB6C1;");
                     arBtnTeclado6[7].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "WINDOWS" :
-                if(banColor == false){
+                break;
+            case "WINDOWS":
+                if (banColor == false) {
                     arBtnTeclado6[2].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado6[2].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "ALT" :
-                if(banColor == false){
+                break;
+            case "ALT":
+                if (banColor == false) {
                     arBtnTeclado6[3].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado6[3].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "SPACE" :
-                if(banColor == false){
+                break;
+            case "SPACE":
+                if (banColor == false) {
                     arBtnTeclado6[4].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado6[4].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
-            case "CONTEXT_MENU" :
-                if(banColor == false){
+                break;
+            case "CONTEXT_MENU":
+                if (banColor == false) {
                     arBtnTeclado6[6].setStyle("-fx-background-color: #85D4D6;");
-                }
-                else{
+                } else {
                     arBtnTeclado6[6].setStyle("-fx-background-color: #FFB6C1;");
                 }
-            break;
+                break;
         }
         banColor = !banColor;
+
+        //Variables para guardar el numero del error
+        int error = 0, vError;
+        String letra;
+
+        //Contiene la cantidad de letras del contenido
+        int noLetras = txtContenido.getLength();
+
+        //Contiene el texto que se escribe
+        letra = txtEscritura.getText();
+        letra = letra.trim(); //Se borran los espacios que pueden tener al inicio o final del texto
+
+        //Variables con el numero de letras del contenido de texto y la escritura
+        StringTokenizer st = new StringTokenizer(leerTxt(ubiTexto));
+        StringTokenizer st2 = new StringTokenizer(letra);
+
+        for (int i = 0; i < txtEscritura.getLength(); i++) {
+            try {
+                if (letra.charAt(i) != leerTxt(ubiTexto).charAt(i)) {
+                    error = error + 1;
+                    vError = error;
+                    System.out.println("Numero de error" + vError);
+                    if (st == st2) {
+                        //System.out.println("Termino el texto");
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                        alert.setTitle("Termino el texto!!");
+                        alert.setHeaderText("Palabras escritas: " + st2);
+                        alert.setContentText("Número de errores: " + vError );
+                        alert.showAndWait();
+                    }
+                }
+                System.out.println("Letra correcta");
+            } catch (Exception e) {
+            }
+        }
     }
 }
 //getCharated -> regresa la letra
