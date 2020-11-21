@@ -3,8 +3,6 @@ package sample;
 import javafx.application.Application;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.Button;
@@ -16,10 +14,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import sample.models.Conexion;
 import sample.ui.Memorama;
+import sample.ui.Dashboard;
 import sample.ui.Taquimecanografo;
-
-import java.awt.*;
 
 public class Main extends Application implements EventHandler {
 
@@ -27,7 +25,7 @@ public class Main extends Application implements EventHandler {
 
     private MenuBar mnbPrincipal;
     private Menu menCompetencia1, menCompetencia2, menSalir;
-    private MenuItem itmMemorama, itmPractica2, itmterminar;//Opciones especificas del menu
+    private MenuItem itmMemorama, itmPractica2, itmRestaurante, itmterminar;//Opciones especificas del menu
     private Scene escena;
 
     private ToolBar tlbMenu;
@@ -37,15 +35,22 @@ public class Main extends Application implements EventHandler {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
+        Conexion.crearConexion();
         CrearUI();
         primaryStage.setTitle("Práctica de Topicos 2020");
         primaryStage.setMaximized(true);
         primaryStage.setScene(escena);//Muestra los menus
         primaryStage.addEventHandler(WindowEvent.WINDOW_HIDDEN, this);
         primaryStage.show();
+
+
+        //new Hilo("Sonic").start();
+        //new Hilo("Sonic").start();
+        //new Hilo("Sonic").start();
     }
 
     private void CrearUI() {
+
         mnbPrincipal = new MenuBar();
         //Creación de los menus principales
         menCompetencia1 = new Menu("Competencia 1");
@@ -63,11 +68,15 @@ public class Main extends Application implements EventHandler {
         itmPractica2 = new MenuItem("Taquimecanográfo");
         itmPractica2.setOnAction(event -> opcionMenu(2));
 
+        itmRestaurante = new MenuItem("Restaurante");
+        itmRestaurante.setOnAction(event -> opcionMenu(3));
+
         itmterminar = new MenuItem("Hasta pronto :)");
         itmterminar.setOnAction(event -> {System.exit(0);});//Hace que la aplicación termine correctamente (El cero indica que termina por petición del usuario)
 
         //Cargar el Item Memorama al menu competencia 1
         menCompetencia1.getItems().addAll(itmMemorama, itmPractica2);//Muestra el boton para el memorama
+        menCompetencia2.getItems().addAll(itmRestaurante);
         menSalir.getItems().add(itmterminar);
 
         //Cear barra de herramientas (opciones del menu con icónos)
@@ -104,6 +113,7 @@ public class Main extends Application implements EventHandler {
         vPrincipal = new VBox();
         vPrincipal.getChildren().addAll(mnbPrincipal, tlbMenu);//Se agrupan los menus en un contenedor vBox
         escena = new Scene(vPrincipal);//Contiene la agrupación de los menus
+        escena.getStylesheets().add("sample/assets/CSS/main_styles.css");
     }
 
     private void opcionMenu(int opc) {
@@ -116,6 +126,7 @@ public class Main extends Application implements EventHandler {
                 new Taquimecanografo();
             break;
             case 3:
+                new Dashboard();
             break;
 
         }

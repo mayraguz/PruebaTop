@@ -1,0 +1,22 @@
+.root{
+    -fx-background-image: url("https://ak.picdn.net/shutterstock/videos/4505600/thumb/1.jpg");
+    -fx-background-size: cover;
+}
+
+.menu-bar{
+    -fx-background-color: #060E5B; /*Color dell menu*/
+    -fx-border-color: 000; /*  */
+    -fx-border-width: 2;
+}
+
+.menu-bar .label{
+    -fx-text-fill: white; /* Color del texto*/
+}
+
+.menu:hover{
+    -fx-background-color: #CCC;
+}
+
+.menu-item .label{
+    -fx-text-fill: black; /* Color del menu item */
+}
